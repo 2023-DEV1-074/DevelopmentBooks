@@ -34,6 +34,7 @@ class PriceSummationServiceImplTest {
     private static final double THREE_DIFF_BOOK_EXPECTED_PRICE_WITH_10_PER_DISCOUNT = 135.0;
 
     private static final double FOUR_DISTINCT_BOOKS_PRICE_WITH_TWENTY_PERCENTAGE_DISCOUNT = 160.00;
+    private static final double TWO_DISTINCT_AND_ONE_SEPARATE_BOOK_WITH_DISCOUNT = 145.00;
 
     List<BookCartDto> bookCartDtoList;
 
@@ -139,6 +140,24 @@ class PriceSummationServiceImplTest {
 
 
         assertEquals(FIVE_DISTINCT_BOOKS_PRICE_WITH_TWENTYFIVE_PERCENTAGE_DISCOUNT, actualPrice);
+    }
+
+    @Test
+    @DisplayName("two distinct listOfBooks should only get 5% discount remaining Books with actual price")
+    void fivePercentDiscountOnlyForTwoDistinctBooksShouldApply() {
+
+
+        BookCartDto firstBook = new BookCartDto(FIRST_BOOK_NAME, TWO);
+        BookCartDto secondBook = new BookCartDto(SECOND_BOOK_NAME, ONE);
+
+        bookCartDtoList.add(firstBook);
+        bookCartDtoList.add(secondBook);
+
+
+        Double actualPrice = priceSummationServiceImpl.calculateBookPrice(bookCartDtoList);
+
+
+        assertEquals(TWO_DISTINCT_AND_ONE_SEPARATE_BOOK_WITH_DISCOUNT, actualPrice);
     }
 
 }
