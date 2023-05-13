@@ -20,6 +20,8 @@ public class PriceSummationServiceImpl implements PriceSummationService {
         int discountPercentage = 0;
         if (distinctBooks == 2) {
             discountPercentage = 5;
+        } else if (distinctBooks == 3) {
+            discountPercentage = 10;
         }
 
         double actualPrice = bookCartDtoList.stream()

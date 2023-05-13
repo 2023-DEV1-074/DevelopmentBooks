@@ -20,11 +20,14 @@ class PriceSummationServiceImplTest {
     private static final String BOOK_NAME = "Clean Code";
     private static final String FIRST_BOOK_NAME = "Clean Code";
     private static final String SECOND_BOOK_NAME = "The Clean Coder";
+    private static final String THIRD_BOOK_NAME = "Clean Architecture";
+
     private static final int ONE = 1;
     private static final int TWO = 2;
     private static final double BOOK_PRICE = 50.00;
     private static final double TWO_DIFF_BOOK_EXPECTED_PRICE_WITH_2_PER_DISCOUNT = 95.0;
 
+    private static final double THREE_DIFF_BOOK_EXPECTED_PRICE_WITH_10_PER_DISCOUNT = 135.0;
 
     List<BookCartDto> bookCartDtoList;
 
@@ -65,4 +68,24 @@ class PriceSummationServiceImplTest {
 
         assertEquals(TWO_DIFF_BOOK_EXPECTED_PRICE_WITH_2_PER_DISCOUNT, actualBookPrice);
     }
+
+    @Test
+    @DisplayName("Three different listOfBooks should get 10% discount")
+    void threeDifferentBooksShouldReturnOneHundredAndThirtyFive() {
+
+
+        BookCartDto firstBook = new BookCartDto(FIRST_BOOK_NAME, ONE);
+        BookCartDto secondBook = new BookCartDto(SECOND_BOOK_NAME, ONE);
+        BookCartDto thirdBook = new BookCartDto(THIRD_BOOK_NAME, ONE);
+
+
+        bookCartDtoList.add(firstBook);
+        bookCartDtoList.add(secondBook);
+        bookCartDtoList.add(thirdBook);
+
+        Double actualPrice = priceSummationServiceImpl.calculateBookPrice(bookCartDtoList);
+
+        assertEquals(THREE_DIFF_BOOK_EXPECTED_PRICE_WITH_10_PER_DISCOUNT, actualPrice);
+    }
+
 }
