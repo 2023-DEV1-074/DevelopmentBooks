@@ -12,21 +12,31 @@ import java.util.stream.Collectors;
 
 @Service
 public class PriceSummationServiceImpl implements PriceSummationService {
+
+    private static final int ZERO = 0;
+    private static final int TWO = 2;
+    private static final int THREE = 3;
+
+    private static final int FIVE = 5;
+    private static final int TEN = 10;
+
+    private static final int HUNDRED = 100;
+
     @Override
     public Double calculateBookPrice(List<BookCartDto> bookCartDtoList) {
         Map<String, Double> bookTitlePriceMap = Arrays.stream(BookStoreEnum.values())
                 .collect(Collectors.toMap(BookStoreEnum::getBookTitle, BookStoreEnum::getPrice));
         long distinctBooks = bookCartDtoList.stream().map(BookCartDto::getName).distinct().count();
-        int discountPercentage = 0;
-        if (distinctBooks == 2) {
-            discountPercentage = 5;
-        } else if (distinctBooks == 3) {
-            discountPercentage = 10;
+        int discountPercentage = ZERO;
+        if (distinctBooks == TWO) {
+            discountPercentage = FIVE;
+        } else if (distinctBooks == THREE) {
+            discountPercentage = TEN;
         }
 
         double actualPrice = bookCartDtoList.stream()
                 .mapToDouble(book -> bookTitlePriceMap.get(book.getName()) * book.getQuantity()).sum();
-        double discountedPrice = (actualPrice * discountPercentage) / 100;
+        double discountedPrice = (actualPrice * discountPercentage) / HUNDRED;
 
         return (actualPrice - discountedPrice);
     }
