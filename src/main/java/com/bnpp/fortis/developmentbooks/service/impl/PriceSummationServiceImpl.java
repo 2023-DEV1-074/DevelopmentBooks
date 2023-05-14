@@ -38,7 +38,7 @@ public class PriceSummationServiceImpl implements PriceSummationService {
 
         if (CollectionUtils.isNotEmpty(listOfPossibleDiscounts)) {
             listOfPossibleDiscounts.stream().forEach(numberOfBooksToGroup -> {
-                Map<String, Integer> listOfBooksWithQuantityMapCopy = listOfBooksWithQuantityMap.entrySet().stream().sorted(Collections.reverseOrder(Map.Entry.comparingByValue())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (firstKey, secondKey) -> secondKey, LinkedHashMap::new));
+                Map<String, Integer> listOfBooksWithQuantityMapCopy = duplicateMap(listOfBooksWithQuantityMap);
                 List<BookGroupClassification> listOfBookGroup = getListOfBookGroupWithDiscount(listOfBooksWithQuantityMapCopy, new ArrayList<>(),
                         numberOfBooksToGroup);
                 if (!listOfBooksWithQuantityMapCopy.isEmpty()) {
@@ -59,7 +59,7 @@ public class PriceSummationServiceImpl implements PriceSummationService {
 
     private List<BookGroupClassification> getListOfBookGroupWithDiscount(Map<String, Integer> listOfBooksWithQuantityMap,
                                                                          List<BookGroupClassification> bookGroupClassificationList,int numberOfBooksToGroup) {
-        numberOfBooksToGroup = numberOfBooksToGroup < listOfBooksWithQuantityMap.size() ? numberOfBooksToGroup : listOfBooksWithQuantityMap.size();
+        numberOfBooksToGroup = getNumberOfBooksToGroup(listOfBooksWithQuantityMap,numberOfBooksToGroup);
         Optional<DiscountDetailsEnum> discount = getDiscount(numberOfBooksToGroup);
         if (discount.isPresent()) {
             int bookGroupSize = discount.get().getNumberOfDistinctItems();
@@ -139,6 +139,14 @@ public class PriceSummationServiceImpl implements PriceSummationService {
             priceSummaryDto.setTotalDiscount(discount);
             priceSummaryDto.setCostEffectivePrice(actualPrice - discount);
         }
+    }
+    private Map<String, Integer> duplicateMap(Map<String, Integer> listOfBooksWithQuantityMap) {
+
+        return listOfBooksWithQuantityMap.entrySet().stream().sorted(Collections.reverseOrder(Map.Entry.comparingByValue())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (firstKey, secondKey) -> secondKey, LinkedHashMap::new));
+    }
+
+    private int getNumberOfBooksToGroup(Map<String, Integer> listOfBooksWithQuantityMap, Integer numberOfBooksToGroup) {
+        return numberOfBooksToGroup < listOfBooksWithQuantityMap.size() ? numberOfBooksToGroup : listOfBooksWithQuantityMap.size();
     }
 
 }
