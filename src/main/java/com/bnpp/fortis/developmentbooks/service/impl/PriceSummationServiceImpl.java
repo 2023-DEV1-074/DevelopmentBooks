@@ -2,6 +2,7 @@ package com.bnpp.fortis.developmentbooks.service.impl;
 
 import com.bnpp.fortis.developmentbooks.model.BookCartDto;
 import com.bnpp.fortis.developmentbooks.model.BookGroupClassification;
+import com.bnpp.fortis.developmentbooks.model.CartSummaryReportDto;
 import com.bnpp.fortis.developmentbooks.service.PriceSummationService;
 import com.bnpp.fortis.developmentbooks.storerepository.BookStoreEnum;
 import com.bnpp.fortis.developmentbooks.storerepository.DiscountDetailsEnum;
@@ -27,7 +28,7 @@ public class PriceSummationServiceImpl implements PriceSummationService {
     private static final int HUNDRED = 100;
 
     @Override
-    public Double calculateBookPrice(List<BookCartDto> bookCartDtoList) {
+    public CartSummaryReportDto calculateBookPrice(List<BookCartDto> bookCartDtoList) {
 
         Map<String, Integer> listOfBooksWithQuantityMap = bookCartDtoList.stream()
                 .collect(Collectors.toMap(BookCartDto::getName, BookCartDto::getQuantity));
@@ -36,7 +37,12 @@ public class PriceSummationServiceImpl implements PriceSummationService {
         listOfBookGroup.add(booksWithoutDiscount);
         double actualPrice = listOfBookGroup.stream().mapToDouble(BookGroupClassification::getActualPrice).sum();
         double discount = listOfBookGroup.stream().mapToDouble(BookGroupClassification::getDiscountAmount).sum();
-        return (actualPrice - discount);
+        CartSummaryReportDto cartSummaryReportDto = new CartSummaryReportDto();
+        cartSummaryReportDto.setListOfBookGroupClassifications(listOfBookGroup);
+        cartSummaryReportDto.setActualPrice(actualPrice);
+        cartSummaryReportDto.setTotalDiscount(discount);
+        cartSummaryReportDto.setCostEffectivePrice(actualPrice - discount);
+        return cartSummaryReportDto;
     }
 
     private List<BookGroupClassification> getListOfBookGroupWithDiscount(Map<String, Integer> listOfBooksWithQuantityMap,
