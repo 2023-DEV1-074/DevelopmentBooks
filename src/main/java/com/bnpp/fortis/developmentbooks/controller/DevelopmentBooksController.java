@@ -1,8 +1,10 @@
 package com.bnpp.fortis.developmentbooks.controller;
 
 import com.bnpp.fortis.developmentbooks.model.Book;
+import com.bnpp.fortis.developmentbooks.model.BooksData;
 import com.bnpp.fortis.developmentbooks.model.CartSummaryReportDto;
 import com.bnpp.fortis.developmentbooks.service.DevelopmentBooksService;
+import com.bnpp.fortis.developmentbooks.service.PriceSummationService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -17,6 +19,9 @@ import java.util.List;
 public class DevelopmentBooksController {
 
     private final DevelopmentBooksService developmentBooksService;
+
+    private final PriceSummationService priceSummationService;
+
 
 
 
@@ -33,7 +38,7 @@ public class DevelopmentBooksController {
 
 
     @PostMapping("${developmentbooks.endpoints.calculatediscountprice}")
-    public CartSummaryReportDto calculateDiscountPrice(@RequestBody String input) {
-        return new CartSummaryReportDto();
+    public CartSummaryReportDto calculateDiscountPrice(@RequestBody BooksData booksData) {
+        return priceSummationService.getCartSummaryReport(booksData.getBookList());
     }
 }

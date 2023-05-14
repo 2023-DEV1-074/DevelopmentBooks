@@ -1,5 +1,7 @@
 package com.bnpp.fortis.developmentbooks.controller;
 
+import com.bnpp.fortis.developmentbooks.model.BookCartDto;
+import com.bnpp.fortis.developmentbooks.model.BooksData;
 import com.bnpp.fortis.developmentbooks.service.DevelopmentBooksService;
 import com.bnpp.fortis.developmentbooks.service.impl.PriceSummationServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,6 +14,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -22,6 +27,11 @@ class DevelopmentBooksControllerTest {
     private static final String GET_ALL_BOOKS_URL = "/api/developmentbooks/getallbooks";
     private static final String CALCULATE_PRICE_URI = "/api/developmentbooks/calculatediscountprice";
 
+
+    private static final String FIRST_BOOK_NAME = "Clean Code";
+    private static final String SECOND_BOOK_NAME = "The Clean Coder";
+
+    private static final int ONE = 1;
     @Autowired
     MockMvc mockMvc;
 
@@ -30,6 +40,9 @@ class DevelopmentBooksControllerTest {
 
     @Autowired
     private DevelopmentBooksController developmentBooksController;
+
+    @MockBean
+    private PriceSummationServiceImpl priceSummationServiceImpl;
 
 
 
@@ -51,8 +64,22 @@ class DevelopmentBooksControllerTest {
     @DisplayName(" API calculate discount price should return status OK")
     void calculateDiscountPriceApiShouldReturnStatusOK() throws Exception {
 
+        BooksData booksData = new BooksData();
+        List<BookCartDto> bookCartDtoList = new ArrayList<BookCartDto>();
+
+
+        BookCartDto firstBook = new BookCartDto(FIRST_BOOK_NAME, ONE);
+        BookCartDto secondBook = new BookCartDto(SECOND_BOOK_NAME, ONE);
+
+        bookCartDtoList.add(firstBook);
+        bookCartDtoList.add(secondBook);
+
+        booksData.setBookList(bookCartDtoList);
+
         mockMvc.perform(post(CALCULATE_PRICE_URI).contentType(MediaType.APPLICATION_JSON)
-                .content("Test Post Api")).andExpect(status().isOk());
+                .content(new ObjectMapper().writeValueAsString(booksData))).andExpect(status().isOk());
     }
+
+
 
 }
