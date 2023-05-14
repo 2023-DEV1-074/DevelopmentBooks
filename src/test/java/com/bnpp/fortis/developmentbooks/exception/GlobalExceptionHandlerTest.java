@@ -36,6 +36,12 @@ class GlobalExceptionHandlerTest {
         ResponseEntity<Object> result = handler.handleBookQuantityBadRequestException(exception);
         assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
     }
+    @Test
+    void handleBadRequestJsonMappingException() {
+
+        ResponseEntity<Object> result = handler.handleJsonMappingException(new JsonMappingException("invalid json"));
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
+    }
 
 
 }
