@@ -1,5 +1,6 @@
 package com.bnpp.fortis.developmentbooks.service.impl;
 
+import com.bnpp.fortis.developmentbooks.exception.InvalidBookException;
 import com.bnpp.fortis.developmentbooks.model.BookCartDto;
 import com.bnpp.fortis.developmentbooks.model.CartSummaryReportDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 class PriceSummationServiceImplTest {
@@ -30,6 +32,9 @@ class PriceSummationServiceImplTest {
     private static final int ONE = 1;
     private static final int TWO = 2;
     private static final int THREE = 3;
+
+    private static final String BOOK_NOT_IN_BOOKSTORE = "Davince Code";
+
 
     private static final double BOOK_PRICE = 50.00;
     private static final double TWO_DIFF_BOOK_EXPECTED_PRICE_WITH_2_PER_DISCOUNT = 95.0;
@@ -213,6 +218,19 @@ class PriceSummationServiceImplTest {
         assertEquals(NINE_BOOKS_WITH_FIVE_DISTINCT_BOOKS_ACTUAL_PRICE, cartSummaryReportDto.getActualPrice());
         assertEquals(NINE_BOOKS_WITH_FIVE_DISTINCT_BOOKS_DISCOUNT_AMOUNT, cartSummaryReportDto.getTotalDiscount());
         assertEquals(NINE_BOOKS_WITH_FIVE_DISTINCT_BOOKS_DISCOUNT, cartSummaryReportDto.getCostEffectivePrice());
+    }
+
+    @Test
+    @DisplayName("calculate price summary should throw book not found exception for the invalid books")
+    void getCartSummaryShouldThrowInvalidExceptionOnInvalidBooks() {
+        BookCartDto firstBook = new BookCartDto(FIRST_BOOK_NAME, TWO);
+        BookCartDto secondBook = new BookCartDto(BOOK_NOT_IN_BOOKSTORE, ONE);
+
+        bookCartDtoList.add(firstBook);
+        bookCartDtoList.add(secondBook);
+
+
+        assertThrows(InvalidBookException.class, () -> priceSummationServiceImpl.getCartSummaryReport(bookCartDtoList));
     }
 
 }
