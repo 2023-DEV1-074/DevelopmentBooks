@@ -1,6 +1,7 @@
 package com.bnpp.fortis.developmentbooks.service.impl;
 
 import com.bnpp.fortis.developmentbooks.exception.InvalidBookException;
+import com.bnpp.fortis.developmentbooks.exception.InvalidQuantityException;
 import com.bnpp.fortis.developmentbooks.model.BookCartDto;
 import com.bnpp.fortis.developmentbooks.model.BookGroupClassification;
 import com.bnpp.fortis.developmentbooks.model.CartSummaryReportDto;
@@ -162,6 +163,10 @@ public class PriceSummationServiceImpl implements PriceSummationService {
         List<String> invalidBooks = bookCartDtoList.stream().filter(book -> !validBooks.containsKey(book.getName())).map(BookCartDto::getName).collect(Collectors.toList());
         if (CollectionUtils.isNotEmpty(invalidBooks)) {
             throw new InvalidBookException(invalidBooks);
+        }
+        List<Integer> invalidQuantities = bookCartDtoList.stream().filter(book -> book.getQuantity() <= 0 ).map(BookCartDto::getQuantity).collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(invalidQuantities)) {
+            throw new InvalidQuantityException(invalidQuantities);
         }
     }
 }
