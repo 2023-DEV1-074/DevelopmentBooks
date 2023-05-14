@@ -9,6 +9,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +19,9 @@ import java.util.List;
 @RequestMapping("${developmentbooks.controller.path}")
 @RequiredArgsConstructor
 public class DevelopmentBooksController {
+
+    Logger logger = LoggerFactory.getLogger(DevelopmentBooksController.class);
+
 
     private final DevelopmentBooksService developmentBooksService;
 
@@ -33,12 +38,24 @@ public class DevelopmentBooksController {
             @ApiResponse(code = 404, message = "not found!!!")})
     @GetMapping("${developmentbooks.endpoints.getallbooks}")
     public List<Book> getallbooks() {
-        return developmentBooksService.getAllBooks();
+        logger.debug("DevelopmentBooksController : getallbooks:  getallbooks api request ");
+
+        List<Book> listOfBooks = developmentBooksService.getAllBooks();
+
+        logger.debug("DevelopmentBooksController : getallbooks:  getallbooks api response: " + listOfBooks);
+
+        return listOfBooks;
     }
 
 
     @PostMapping("${developmentbooks.endpoints.calculatediscountprice}")
     public CartSummaryReportDto calculateDiscountPrice(@RequestBody BooksData booksData) {
-        return priceSummationService.getCartSummaryReport(booksData.getBookList());
+        logger.debug("DevelopmentBooksController : calculateDiscountPrice: calculateDiscountPrice api request " + booksData);
+
+        CartSummaryReportDto cartSummaryReportDto = priceSummationService.getCartSummaryReport(booksData.getBookList());
+
+        logger.debug("DevelopmentBooksController : calculateDiscountPrice: calculateDiscountPrice api response " + cartSummaryReportDto);
+
+        return cartSummaryReportDto;
     }
 }
