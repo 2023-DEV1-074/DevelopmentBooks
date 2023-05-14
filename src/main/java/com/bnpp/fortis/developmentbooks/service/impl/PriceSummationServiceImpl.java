@@ -28,7 +28,7 @@ public class PriceSummationServiceImpl implements PriceSummationService {
     private static final int HUNDRED = 100;
 
     @Override
-    public CartSummaryReportDto calculateBookPrice(List<BookCartDto> bookCartDtoList) {
+    public CartSummaryReportDto getCartSummaryReport(List<BookCartDto> bookCartDtoList) {
 
         Map<String, Integer> listOfBooksWithQuantityMap = bookCartDtoList.stream()
                 .collect(Collectors.toMap(BookCartDto::getName, BookCartDto::getQuantity));
