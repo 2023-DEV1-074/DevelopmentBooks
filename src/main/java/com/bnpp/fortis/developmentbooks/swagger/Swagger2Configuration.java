@@ -1,5 +1,6 @@
 package com.bnpp.fortis.developmentbooks.swagger;
 
+import com.bnpp.fortis.developmentbooks.utils.Constants;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,7 +22,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableWebMvc
 public class Swagger2Configuration extends WebMvcConfigurerAdapter {
 
-    private static final String APP_BASE_URL = "http://localhost:8080";
 
     @Bean
     public Docket api() {
@@ -38,9 +38,9 @@ public class Swagger2Configuration extends WebMvcConfigurerAdapter {
 
         return new ApiInfoBuilder().title(" Development Book REST APIs")
                 .description("REST APIs for  Development Book list and Calculate best price for the books")
-                .termsOfServiceUrl(APP_BASE_URL)
-                .contact(new Contact("Muni", APP_BASE_URL, "muni@gmail.com")).license("License")
-                .licenseUrl(APP_BASE_URL).version("1.0").build();
+                .termsOfServiceUrl(Constants.APP_BASE_URL)
+                .contact(new Contact("Muni", Constants.APP_BASE_URL, "muni@gmail.com")).license("License")
+                .licenseUrl(Constants.APP_BASE_URL).version("1.0").build();
     }
 
     @Override

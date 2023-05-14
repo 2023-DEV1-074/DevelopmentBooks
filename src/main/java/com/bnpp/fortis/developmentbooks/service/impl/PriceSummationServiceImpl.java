@@ -8,6 +8,7 @@ import com.bnpp.fortis.developmentbooks.model.CartSummaryReportDto;
 import com.bnpp.fortis.developmentbooks.service.PriceSummationService;
 import com.bnpp.fortis.developmentbooks.storerepository.BookStoreEnum;
 import com.bnpp.fortis.developmentbooks.storerepository.DiscountDetailsEnum;
+import com.bnpp.fortis.developmentbooks.utils.Constants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
@@ -17,18 +18,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class PriceSummationServiceImpl implements PriceSummationService {
-
-    private static final int ZERO = 0;
-    private static final int TWO = 2;
-    private static final int THREE = 3;
-    private static final int ZERO_PERCENT = 0;
-
-    private static final int ONE_QUANTITY = 1;
-
-    private static final int FIVE = 5;
-    private static final int TEN = 10;
-
-    private static final int HUNDRED = 100;
 
     @Override
     public CartSummaryReportDto getCartSummaryReport(List<BookCartDto> bookCartDtoList) {
@@ -88,7 +77,7 @@ public class PriceSummationServiceImpl implements PriceSummationService {
         double actualPrice = bookTitles.stream()
                 .mapToDouble(bookId -> bookIdPriceMap.get(bookId) * listOfBooksWithQuantityMap.get(bookId)).sum();
         int numberOfBooks = listOfBooksWithQuantityMap.values().stream().mapToInt(Integer::intValue).sum();
-        return new BookGroupClassification(new ArrayList<>(listOfBooksWithQuantityMap.keySet()), ZERO_PERCENT, actualPrice, BigDecimal.ZERO.doubleValue(), numberOfBooks);
+        return new BookGroupClassification(new ArrayList<>(listOfBooksWithQuantityMap.keySet()), Constants.ZERO_PERCENT, actualPrice, Constants.NO_DISCOUNT, numberOfBooks);
     }
 
     private Map<String, Double> getBookNamePriceMap() {
@@ -101,7 +90,7 @@ public class PriceSummationServiceImpl implements PriceSummationService {
         double actualPrice = listOfBookToGroup.stream().mapToDouble(bookName -> bookNamePriceMap.get(bookName))
                 .sum();
         int discountPercentage = getDiscountPercentage(listOfBookToGroup.size());
-        double discount = (actualPrice * discountPercentage) / HUNDRED;
+        double discount = (actualPrice * discountPercentage) / Constants.HUNDRED;
         return new BookGroupClassification(listOfBookToGroup, discountPercentage, actualPrice, discount, listOfBookToGroup.size());
 
     }
@@ -120,8 +109,8 @@ public class PriceSummationServiceImpl implements PriceSummationService {
     private void removeDiscountedBooksFromMap(Map<String, Integer> listOfbookWithQuantityMap, List<String> discountedBooks) {
         discountedBooks.forEach(bookName -> {
             int quantity = listOfbookWithQuantityMap.get(bookName);
-            if (quantity > ONE_QUANTITY) {
-                listOfbookWithQuantityMap.put(bookName, quantity - ONE_QUANTITY);
+            if (quantity > Constants.ONE_QUANTITY) {
+                listOfbookWithQuantityMap.put(bookName, quantity - Constants.ONE_QUANTITY);
             } else {
                 listOfbookWithQuantityMap.remove(bookName);
             }
@@ -132,7 +121,7 @@ public class PriceSummationServiceImpl implements PriceSummationService {
 
         Optional<DiscountDetailsEnum> checkDiscount = getDiscount(numberOfDistinctBooks);
 
-        return (checkDiscount.isPresent()) ? checkDiscount.get().getDiscountPercentage() : ZERO_PERCENT;
+        return (checkDiscount.isPresent()) ? checkDiscount.get().getDiscountPercentage() : Constants.ZERO_PERCENT;
     }
 
     private List<Integer> getPossibleDiscountValues(int numberOfBooks) {
