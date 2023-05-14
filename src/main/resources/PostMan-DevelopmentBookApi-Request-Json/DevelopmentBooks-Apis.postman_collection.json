@@ -1,0 +1,61 @@
+{
+	"info": {
+		"_postman_id": "65176956-4883-4e2f-8410-5df65d36b257",
+		"name": "DevelopmentBooks-Apis",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3444390"
+	},
+	"item": [
+		{
+			"name": "calculatediscountprice",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"bookList\":[\r\n    {\r\n        \"name\": \"Clean Code\",\r\n        \"quantity\": 2\r\n    },\r\n    {\r\n        \"name\": \"The Clean Coder\",\r\n        \"quantity\": 2\r\n    },\r\n    {\r\n        \"name\": \"Clean Architecture\",\r\n        \"quantity\": 2\r\n    },\r\n    {\r\n        \"name\": \"Test-Driven Development By Example\",\r\n        \"quantity\": 1\r\n    },\r\n    {\r\n        \"name\": \"Working Effectively With Legacy Code\",\r\n        \"quantity\": 1\r\n    }\r\n    \r\n]}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/developmentbooks/calculatediscountprice",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"developmentbooks",
+						"calculatediscountprice"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getallbooks",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/developmentbooks/getallbooks",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"developmentbooks",
+						"getallbooks"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
