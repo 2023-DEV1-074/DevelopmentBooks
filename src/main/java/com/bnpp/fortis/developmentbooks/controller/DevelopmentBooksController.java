@@ -9,8 +9,11 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("${developmentbooks.controller.path}")
 @RequiredArgsConstructor
+@Slf4j
 public class DevelopmentBooksController {
 
     Logger logger = LoggerFactory.getLogger(DevelopmentBooksController.class);
@@ -42,7 +46,7 @@ public class DevelopmentBooksController {
 
         List<Book> listOfBooks = developmentBooksService.getAllBooks();
 
-        logger.debug("DevelopmentBooksController : getallbooks:  getallbooks api response: " + listOfBooks);
+        logger.debug("DevelopmentBooksController : getallbooks:  getallbooks api response: {} ", listOfBooks);
 
         return listOfBooks;
     }
@@ -56,11 +60,11 @@ public class DevelopmentBooksController {
     })
     @PostMapping("${developmentbooks.endpoints.calculatediscountprice}")
     public CartSummaryReportDto calculateDiscountPrice(@RequestBody BooksData booksData) {
-        logger.debug("DevelopmentBooksController : calculateDiscountPrice: calculateDiscountPrice api request " + booksData);
+        logger.debug("DevelopmentBooksController : calculateDiscountPrice: calculateDiscountPrice api request {}",  booksData);
 
         CartSummaryReportDto cartSummaryReportDto = priceSummationService.getCartSummaryReport(booksData.getBookList());
 
-        logger.debug("DevelopmentBooksController : calculateDiscountPrice: calculateDiscountPrice api response " + cartSummaryReportDto);
+        logger.debug("DevelopmentBooksController : calculateDiscountPrice: calculateDiscountPrice api response {}",  cartSummaryReportDto);
 
         return cartSummaryReportDto;
     }

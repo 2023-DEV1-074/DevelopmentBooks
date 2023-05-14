@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 
 public class Constants {
 
+    private Constants() {
+        throw new IllegalStateException("Utility class");
+    }
     public static final double NO_DISCOUNT = BigDecimal.ZERO.doubleValue();
     public static final String APP_BASE_URL = "http://localhost:8080";
 

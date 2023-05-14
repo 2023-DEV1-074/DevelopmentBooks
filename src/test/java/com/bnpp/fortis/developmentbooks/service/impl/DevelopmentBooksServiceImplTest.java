@@ -9,6 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 @SpringBootTest
 class DevelopmentBooksServiceImplTest {
     private static final int TOTAL_NUMBER_OF_BOOKS = 5;
@@ -22,7 +24,7 @@ class DevelopmentBooksServiceImplTest {
 
         List<Book> books = developmentBooksService.getAllBooks();
 
-        Assertions.assertThat(TOTAL_NUMBER_OF_BOOKS).isEqualTo(books.size());
+        assertEquals(TOTAL_NUMBER_OF_BOOKS, books.size());
     }
 
 
