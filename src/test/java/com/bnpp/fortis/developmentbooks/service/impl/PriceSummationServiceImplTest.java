@@ -1,6 +1,7 @@
 package com.bnpp.fortis.developmentbooks.service.impl;
 
 import com.bnpp.fortis.developmentbooks.model.BookCartDto;
+import com.bnpp.fortis.developmentbooks.model.CartSummaryReportDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,7 +38,9 @@ class PriceSummationServiceImplTest {
 
     private static final double FOUR_DISTINCT_BOOKS_PRICE_WITH_TWENTY_PERCENTAGE_DISCOUNT = 160.00;
     private static final double TWO_DISTINCT_AND_ONE_SEPARATE_BOOK_WITH_DISCOUNT = 145.00;
-    private static final double NINE_BOOKS_WITH_FIVE_DISTINCT_BOOKS_DISCOUNT = 372.5;
+    private static final double NINE_BOOKS_WITH_FIVE_DISTINCT_BOOKS_DISCOUNT = 370.0;
+    private static final double NINE_BOOKS_WITH_FIVE_DISTINCT_BOOKS_ACTUAL_PRICE = 450.0;
+    private static final double NINE_BOOKS_WITH_FIVE_DISTINCT_BOOKS_DISCOUNT_AMOUNT = 80.0;
 
     List<BookCartDto> bookCartDtoList;
 
@@ -186,5 +189,30 @@ class PriceSummationServiceImplTest {
         assertEquals(NINE_BOOKS_WITH_FIVE_DISTINCT_BOOKS_DISCOUNT, actualPrice);
     }
 
+    @Test
+    @DisplayName("calculate price should return detailed price summary")
+    void cartSummaryReportTesting() {
+
+        BookCartDto firstBook = new BookCartDto(FIRST_BOOK_NAME, TWO);
+        BookCartDto secondBook = new BookCartDto(SECOND_BOOK_NAME, ONE);
+        BookCartDto thirdBook = new BookCartDto(THIRD_BOOK_NAME, THREE);
+        BookCartDto fourthBook = new BookCartDto(FOURTH_BOOK_NAME, TWO);
+        BookCartDto fifthBook = new BookCartDto(FIFTH_BOOK_NAME, ONE);
+
+
+        bookCartDtoList.add(firstBook);
+        bookCartDtoList.add(secondBook);
+        bookCartDtoList.add(thirdBook);
+        bookCartDtoList.add(fourthBook);
+        bookCartDtoList.add(fifthBook);
+
+
+
+        CartSummaryReportDto cartSummaryReportDto = priceSummationServiceImpl.getCartSummaryReport(bookCartDtoList);
+
+        assertEquals(NINE_BOOKS_WITH_FIVE_DISTINCT_BOOKS_ACTUAL_PRICE, cartSummaryReportDto.getActualPrice());
+        assertEquals(NINE_BOOKS_WITH_FIVE_DISTINCT_BOOKS_DISCOUNT_AMOUNT, cartSummaryReportDto.getTotalDiscount());
+        assertEquals(NINE_BOOKS_WITH_FIVE_DISTINCT_BOOKS_DISCOUNT, cartSummaryReportDto.getCostEffectivePrice());
+    }
 
 }

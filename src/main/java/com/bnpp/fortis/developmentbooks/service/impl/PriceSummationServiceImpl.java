@@ -6,6 +6,7 @@ import com.bnpp.fortis.developmentbooks.model.CartSummaryReportDto;
 import com.bnpp.fortis.developmentbooks.service.PriceSummationService;
 import com.bnpp.fortis.developmentbooks.storerepository.BookStoreEnum;
 import com.bnpp.fortis.developmentbooks.storerepository.DiscountDetailsEnum;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -32,22 +33,34 @@ public class PriceSummationServiceImpl implements PriceSummationService {
 
         Map<String, Integer> listOfBooksWithQuantityMap = bookCartDtoList.stream()
                 .collect(Collectors.toMap(BookCartDto::getName, BookCartDto::getQuantity));
-        List<BookGroupClassification> listOfBookGroup = getListOfBookGroupWithDiscount(listOfBooksWithQuantityMap, new ArrayList<>());
-        BookGroupClassification booksWithoutDiscount = getListOfBookGroupWithoutDiscount(listOfBooksWithQuantityMap);
-        listOfBookGroup.add(booksWithoutDiscount);
-        double actualPrice = listOfBookGroup.stream().mapToDouble(BookGroupClassification::getActualPrice).sum();
-        double discount = listOfBookGroup.stream().mapToDouble(BookGroupClassification::getDiscountAmount).sum();
+        List<Integer> listOfPossibleDiscounts = getPossibleDiscountValues(listOfBooksWithQuantityMap.size());
         CartSummaryReportDto cartSummaryReportDto = new CartSummaryReportDto();
-        cartSummaryReportDto.setListOfBookGroupClassifications(listOfBookGroup);
-        cartSummaryReportDto.setActualPrice(actualPrice);
-        cartSummaryReportDto.setTotalDiscount(discount);
-        cartSummaryReportDto.setCostEffectivePrice(actualPrice - discount);
+
+        if (CollectionUtils.isNotEmpty(listOfPossibleDiscounts)) {
+            listOfPossibleDiscounts.stream().forEach(numberOfBooksToGroup -> {
+                Map<String, Integer> listOfBooksWithQuantityMapCopy = listOfBooksWithQuantityMap.entrySet().stream().sorted(Collections.reverseOrder(Map.Entry.comparingByValue())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (firstKey, secondKey) -> secondKey, LinkedHashMap::new));
+                List<BookGroupClassification> listOfBookGroup = getListOfBookGroupWithDiscount(listOfBooksWithQuantityMapCopy, new ArrayList<>(),
+                        numberOfBooksToGroup);
+                if (!listOfBooksWithQuantityMapCopy.isEmpty()) {
+                    BookGroupClassification booksWithoutDiscount = getListOfBookGroupWithoutDiscount(listOfBooksWithQuantityMapCopy);
+                    listOfBookGroup.add(booksWithoutDiscount);
+                }
+                updateBestDiscount(cartSummaryReportDto, listOfBookGroup);
+            });
+        } else {
+            BookGroupClassification booksWithoutDiscount = getListOfBookGroupWithoutDiscount(listOfBooksWithQuantityMap);
+            List<BookGroupClassification> listOfBookGroup = new ArrayList<>();
+            listOfBookGroup.add(booksWithoutDiscount);
+            updateBestDiscount(cartSummaryReportDto, listOfBookGroup);
+        }
+
         return cartSummaryReportDto;
     }
 
     private List<BookGroupClassification> getListOfBookGroupWithDiscount(Map<String, Integer> listOfBooksWithQuantityMap,
-                                                                         List<BookGroupClassification> bookGroupClassificationList) {
-        Optional<DiscountDetailsEnum> discount = getDiscount(listOfBooksWithQuantityMap.size());
+                                                                         List<BookGroupClassification> bookGroupClassificationList,int numberOfBooksToGroup) {
+        numberOfBooksToGroup = numberOfBooksToGroup < listOfBooksWithQuantityMap.size() ? numberOfBooksToGroup : listOfBooksWithQuantityMap.size();
+        Optional<DiscountDetailsEnum> discount = getDiscount(numberOfBooksToGroup);
         if (discount.isPresent()) {
             int bookGroupSize = discount.get().getNumberOfDistinctItems();
             List<String> listOfDistinctBooks = listOfBooksWithQuantityMap.keySet().stream().limit(bookGroupSize)
@@ -55,7 +68,7 @@ public class PriceSummationServiceImpl implements PriceSummationService {
             BookGroupClassification currentBookGroup = getBookGroup(listOfDistinctBooks);
             bookGroupClassificationList.add(currentBookGroup);
             removeDiscountedBooksFromMap(listOfBooksWithQuantityMap, listOfDistinctBooks);
-            getListOfBookGroupWithDiscount(listOfBooksWithQuantityMap, bookGroupClassificationList);
+            getListOfBookGroupWithDiscount(listOfBooksWithQuantityMap, bookGroupClassificationList, numberOfBooksToGroup);
         }
         return bookGroupClassificationList;
     }
@@ -111,6 +124,21 @@ public class PriceSummationServiceImpl implements PriceSummationService {
         Optional<DiscountDetailsEnum> checkDiscount = getDiscount(numberOfDistinctBooks);
 
         return (checkDiscount.isPresent()) ? checkDiscount.get().getDiscountPercentage() : ZERO_PERCENT;
+    }
+
+    private List<Integer> getPossibleDiscountValues(int numberOfBooks) {
+
+        return Arrays.stream(DiscountDetailsEnum.values()).sorted(Comparator.reverseOrder()).filter(discountGroup -> discountGroup.getNumberOfDistinctItems() <= numberOfBooks).map(DiscountDetailsEnum::getNumberOfDistinctItems).collect(Collectors.toList());
+    }
+    private void updateBestDiscount(CartSummaryReportDto priceSummaryDto, List<BookGroupClassification> listOfBookGroupClassification) {
+        double discount = listOfBookGroupClassification.stream().mapToDouble(BookGroupClassification::getDiscountAmount).sum();
+        if (discount >= priceSummaryDto.getTotalDiscount()) {
+            priceSummaryDto.setListOfBookGroupClassifications(listOfBookGroupClassification);
+            double actualPrice = listOfBookGroupClassification.stream().mapToDouble(BookGroupClassification::getActualPrice).sum();
+            priceSummaryDto.setActualPrice(actualPrice);
+            priceSummaryDto.setTotalDiscount(discount);
+            priceSummaryDto.setCostEffectivePrice(actualPrice - discount);
+        }
     }
 
 }
