@@ -1,5 +1,6 @@
 package com.bnpp.fortis.developmentbooks.model;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BooksData {
-
+    @ApiModelProperty(notes = "List of Book Names And Quantities", name = "bookList", required = true, value = "book list")
     List<BookCartDto> bookList;
 
 }
