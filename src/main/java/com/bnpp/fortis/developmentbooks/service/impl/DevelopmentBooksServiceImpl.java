@@ -4,7 +4,7 @@ import com.bnpp.fortis.developmentbooks.model.Book;
 import com.bnpp.fortis.developmentbooks.model.BookMapper;
 import com.bnpp.fortis.developmentbooks.service.DevelopmentBooksService;
 import com.bnpp.fortis.developmentbooks.storerepository.BookStoreEnum;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class DevelopmentBooksServiceImpl implements DevelopmentBooksService {
 
-    @Autowired
-    BookMapper bookMapper;
+    private final BookMapper bookMapper;
 
     @Override
     public List<Book> getAllBooks() {

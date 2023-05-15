@@ -1,6 +1,6 @@
 package com.bnpp.fortis.developmentbooks.swagger;
 
-import com.bnpp.fortis.developmentbooks.utils.Constants;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +23,18 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class Swagger2Configuration extends WebMvcConfigurerAdapter {
 
 
+    @Value("${swagger.app.base.url}")
+    private String appBaseUrl;
+    @Value("${swagger.contact.name}")
+    private String contactName;
+    @Value("${swagger.contact.email}")
+    private String contactEmail;
+    @Value("${swagger.contact.license}")
+    private String contactLicense;
+    @Value("${swagger.contact.version}")
+    private String contactVersion;
+
+
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2).apiInfo(apiInfo())
@@ -38,9 +50,9 @@ public class Swagger2Configuration extends WebMvcConfigurerAdapter {
 
         return new ApiInfoBuilder().title(" Development Book REST APIs")
                 .description("REST APIs for  Development Book list and Calculate best price for the books")
-                .termsOfServiceUrl(Constants.APP_BASE_URL)
-                .contact(new Contact("Muni", Constants.APP_BASE_URL, "muni@gmail.com")).license("License")
-                .licenseUrl(Constants.APP_BASE_URL).version("1.0").build();
+                .termsOfServiceUrl(appBaseUrl)
+                .contact(new Contact(contactName, appBaseUrl, contactEmail)).license(contactLicense)
+                .licenseUrl(appBaseUrl).version(contactVersion).build();
     }
 
     @Override
